@@ -15,7 +15,7 @@ public class ExcelReaderTest extends TestCase {
     public void testRead() throws Exception {
 
         ExcelReader reader = new ExcelReader();
-        List<ImportDocument> list = reader.read();
+        List<ItalyTechnicalDocument> list = reader.read();
         assertThat(list.size(), is(250));
 
     }

@@ -4,16 +4,17 @@ import java.io.File;
 
 import org.joda.time.LocalDate;
 
-public class ImportDocument {
+public class ItalyTechnicalDocument {
 
-    public ImportDocument(String name, LocalDate date) {
+    public ItalyTechnicalDocument(String name, LocalDate date) {
         super();
         this.name = name;
         this.date = date;
     }
     
-    public ImportDocument(File file) {
+    public ItalyTechnicalDocument(File file) {
         this.file = file;
+        this.name = file.getName();
     }
 
     private String name;

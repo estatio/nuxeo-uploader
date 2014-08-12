@@ -17,9 +17,9 @@ import org.joda.time.LocalDate;
 
 public class ExcelReader {
 
-    public List<ImportDocument> read() throws InvalidFormatException, IOException {
+    public List<ItalyTechnicalDocument> read() throws InvalidFormatException, IOException {
 
-        List<ImportDocument> documents = new ArrayList<ImportDocument>();
+        List<ItalyTechnicalDocument> documents = new ArrayList<ItalyTechnicalDocument>();
 
         InputStream inp = new FileInputStream("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\RPM\\RPM 2_Tecnico\\RPM_Indice Archivio Tecnico ITA Unico.xls");
 
@@ -48,7 +48,7 @@ public class ExcelReader {
                     // iets met e
                 }
 
-                documents.add(new ImportDocument(fileName, date));
+                documents.add(new ItalyTechnicalDocument(fileName, date));
             }
         }
 
