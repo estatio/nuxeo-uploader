@@ -7,22 +7,38 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.joda.time.LocalDate;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ExcelReaderTest extends TestCase {
 
+    private ExcelReader reader;
+
+    private List<ItalyTechnicalDocument> list;
+
+    @Before
+    public void setUp() throws Exception {
+        reader = new ExcelReader();
+        list = reader.read();
+    }
+
     @Test
     public void testRead() throws Exception {
 
-        ExcelReader reader = new ExcelReader();
-        List<ItalyTechnicalDocument> list = reader.read();
         assertThat(list.size(), is(250));
 
     }
-    
+
     @Test
-    public void sdf() throws Exception {
-        
+    public void testDate() throws Exception {
+        assertThat((LocalDate) list.get(0).getProperty("def:Date"), is(new LocalDate(2000, 12, 6)));
+
+    }
+
+    @Test
+    public void testDump() throws Exception {
+        System.out.println(list.get(0).dumpProperties());
     }
 
 }
