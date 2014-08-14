@@ -39,13 +39,13 @@ public class ExcelReader {
 
                 String fileName = String.format(
                         "%s %s.%s.%s.%s",
-                        row.getCell(0).toString(),
-                        row.getCell(1).toString(),
-                        row.getCell(2).toString(),
-                        row.getCell(3).toString(),
-                        row.getCell(4).toString());
+                        stringOfCell(row.getCell(0)),
+                        stringOfCell(row.getCell(1)),
+                        stringOfCell(row.getCell(2)),
+                        stringOfCell(row.getCell(3)),
+                        stringOfCell(row.getCell(4)));
                 LocalDate date = null;
-
+                
                 String dateStr = stringOfCell(row.getCell(3)).concat("0101").substring(0, 8);
                 try {
                     date = LocalDate.parse(dateStr, DateTimeFormat.forPattern("yyyyMMdd"));
@@ -66,22 +66,24 @@ public class ExcelReader {
                 doc.addProperty("def:Format", stringOfCell(row.getCell(20)));
                 doc.addProperty("def:DataRoom", stringOfCell(row.getCell(25)));
                 doc.addProperty("dc:Location", stringOfCell(row.getCell(23)));
-                doc.addProperty("def:Department", stringOfCell(row.getCell(1)) );
-                doc.addProperty("def:Subject", stringOfCell(row.getCell(2)).charAt(0)+stringOfCell(row.getCell(2)).charAt(1));
+                doc.addProperty("def:Department", stringOfCell(row.getCell(1)));
+                doc.addProperty("def:Subject", stringOfCell(row.getCell(2)));
                 doc.addProperty("def:SubSubject", "");
-                doc.addProperty("def:DepartmentSubject", "");
-                doc.addProperty("type", "");
-                doc.addProperty("name", "");
-                doc.addProperty("def:Brand", "");
-                
-                
-                
-                
+                doc.addProperty("def:DepartmentSubject", stringOfCell(row.getCell(1)) + "/" + stringOfCell(row.getCell(2)));
+                doc.addProperty("type",returnFileType(row.getCell(5)));
+                doc.addProperty("name", fileName);
+                doc.addProperty("def:Brand", stringOfCell(row.getCell(10)));
+
                 documents.add(doc);
 
             }
         }
         return documents;
+    }
+
+    private String returnFileType(Cell cell) {
+        return cell == null ? "ECP_CONTAINER" : "ECP_FILE";
+
     }
 
     private String stringOfCell(Cell cell) {
@@ -90,10 +92,10 @@ public class ExcelReader {
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
         return cell.getStringCellValue();
-        
-//        DataFormatter fmt = new DataFormatter();
-//        CellReference cr = new CellReference(cell);
-//        return fmt.formatCellValue(cell);
+
+        // DataFormatter fmt = new DataFormatter();
+        // CellReference cr = new CellReference(cell);
+        // return fmt.formatCellValue(cell);
     }
 
     private Double numericOfCell(Cell cell) {

@@ -36,45 +36,62 @@ public class DocumentCreator {
     public void disconnect() {
         client.shutdown();
     }
-
+  
     public void create(ItalyTechnicalDocument doc, String rootPath) throws Exception {
         if (session == null) {
             connect();
         }
-
+        Document root;
         // Fetch the root of Nuxeo repository
-        Document root = (Document) session.newRequest("Document.Fetch").set("value", rootPath).execute();
-
+        System.out.println(rootPath);
+        //root = (Document) session.newRequest("Document.Fetch").set("value", rootPath).execute();
+//        try{
+//            Document path = (Document)session.newRequest("Document.Fetch").set("value", "RPM").execute();
+//        }catch(Exception e){
+//            
+//        }
+        Document path=null;
+        try {
+            path = (Document) session.newRequest("Document.Fetch").setInput(rootPath).set("type", "Folder").set("name", "RPM").set("properties", "cd:title=RPM").execute();
+        }catch (Exception e) {
+            
+        }
+        if(path == (null)){
+            session.newRequest("Document.Create").setInput(rootPath).set("properties", "dc:title=RPM").set("name", "RPM").set("type", "Folder").execute();
+        }
+        else {
+            root=path;
+        }
+       
         // Instantiate a new Document with the simple constructor
         Document document = new Document("myDocument", "File");
         document.set("dc:title", doc.getName());
-        document.set("dc:description", doc.getName());
-
-        // Create a document of File type by setting the parameter 'properties'
-        // with String metadata values delimited by comma ','
-        document = (Document) session.newRequest("Document.Create")
-                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
-                .setInput(root).set("type", document.getType())
-                .set("name", document.getId())
-                .set("properties", document)
-                .execute();
-
-        // Update the document
-        document = (Document) session.newRequest("Document.Update")
-                .setInput(document)
-                .set("properties", document)
-                .execute();
-
-        // create a file document
-        File file = doc.getFile();
-        FileBlob fb = new FileBlob(file);
-        fb.setMimeType(Files.probeContentType(file.toPath()));
-        // uploading a file will return null since we used HEADER_NX_VOIDOP
-        session.newRequest("Blob.Attach")
-                .setHeader(Constants.HEADER_NX_VOIDOP, "true")
-                .setInput(fb)
-                .set("document", document.getId())
-                .execute();
+        
+        document.set("dc:description", "test description");
+        Document loc = (Document)session.newRequest("Document.Fetch").set("value", "RPM").execute();
+        
+        document = (Document) session.newRequest("Document.Create").setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(loc).set("type", document.getType()) .set("name",document.getId()).set("properties", document).execute();
+        
+        System.out.print(document.getPath());
+        // Create a document of File type by setting the parameter
+          //'properties' // with String metadata values delimited by comma ','
+          document = (Document) session.newRequest("Document.Create")
+          .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+          .setInput(rootPath).set("type", document.getType()) .set("name",
+          document.getId()) .set("properties", document) .execute();
+          
+          // Update the document document = (Document)
+          session.newRequest("Document.Update") .setInput(document)
+          .set("properties", document) .execute();
+          
+          // create a file document //File file = doc.getFile(); //FileBlob fb
+          //= new FileBlob(file);
+          //fb.setMimeType(Files.probeContentType(file.toPath())); // uploading
+          //a file will return null since we used HEADER_NX_VOIDOP
+          //session.newRequest("Blob.Attach") //
+          //.setHeader(Constants.HEADER_NX_VOIDOP, "true") // .setInput(fb)
+          //.set("document", document.getId()) // .execute();
+         
     }
 
 }
