@@ -1,6 +1,7 @@
 package org.estatio;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,24 +9,27 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.ss.util.CellReference;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
 public class ExcelReader {
 
-    public List<ItalyTechnicalDocument> read() throws InvalidFormatException, IOException {
+    public List<ImportDocument> read(String filePath) throws InvalidFormatException, IOException {
 
-        List<ItalyTechnicalDocument> documents = new ArrayList<ItalyTechnicalDocument>();
-
-        InputStream inp = new FileInputStream("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\RPM\\RPM 2_Tecnico\\RPM_Indice Archivio Tecnico ITA Unico.xls");
+        List<ImportDocument> documents = new ArrayList<ImportDocument>();
+        InputStream inp;
+        try {
+            inp = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            inp = new FileInputStream(filePath.concat("x"));
+        }
 
         Workbook wb = WorkbookFactory.create(inp);
         Sheet sheet = wb.getSheetAt(0);
@@ -45,15 +49,16 @@ public class ExcelReader {
                         stringOfCell(row.getCell(3)),
                         stringOfCell(row.getCell(4)));
                 LocalDate date = null;
-                
-                String dateStr = stringOfCell(row.getCell(3)).concat("0101").substring(0, 8);
+
+                String dateStr = StringUtils.substring(stringOfCell(row.getCell(3)).concat("0101"), 0, 8);
                 try {
                     date = LocalDate.parse(dateStr, DateTimeFormat.forPattern("yyyyMMdd"));
                 } catch (Exception e) {
-                    System.out.println(String.format("Cannot parse [%s]", dateStr));
+                    // System.out.println(String.format("Cannot parse [%s] in file [%s]",
+                    // dateStr, fileName));
                 }
 
-                ItalyTechnicalDocument doc = new ItalyTechnicalDocument(fileName, date);
+                ImportDocument doc = new ImportDocument(fileName, date);
                 doc.addProperty("def:Property", stringOfCell(row.getCell(0)));
                 doc.addProperty("def:Date", date);
                 doc.addProperty("dc:title", fileName);
@@ -65,13 +70,10 @@ public class ExcelReader {
                 doc.addProperty("def:DocumentKind", stringOfCell(row.getCell(7)));
                 doc.addProperty("def:Format", stringOfCell(row.getCell(20)));
                 doc.addProperty("def:DataRoom", stringOfCell(row.getCell(25)));
-                doc.addProperty("dc:Location", stringOfCell(row.getCell(23)));
+                doc.addProperty("def:Location", stringOfCell(row.getCell(23)));
                 doc.addProperty("def:Department", stringOfCell(row.getCell(1)));
-                doc.addProperty("def:Subject", stringOfCell(row.getCell(2)));
-                doc.addProperty("def:SubSubject", "");
-                doc.addProperty("def:DepartmentSubject", stringOfCell(row.getCell(1)) + "/" + stringOfCell(row.getCell(2)));
-                doc.addProperty("type",returnFileType(row.getCell(5)));
-                doc.addProperty("name", fileName);
+                doc.addProperty("def:Subject", StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2));
+                doc.addProperty("def:SubSubject", stringOfCell(row.getCell(2)).length() > 2 ? stringOfCell(row.getCell(2)) : null);
                 doc.addProperty("def:Brand", stringOfCell(row.getCell(10)));
 
                 documents.add(doc);
@@ -91,7 +93,7 @@ public class ExcelReader {
             return null;
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
-        return cell.getStringCellValue();
+        return cell.getStringCellValue().trim();
 
         // DataFormatter fmt = new DataFormatter();
         // CellReference cr = new CellReference(cell);

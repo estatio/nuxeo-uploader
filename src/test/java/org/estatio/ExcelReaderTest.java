@@ -15,12 +15,12 @@ public class ExcelReaderTest extends TestCase {
 
     private ExcelReader reader;
 
-    private List<ItalyTechnicalDocument> list;
+    private List<ImportDocument> list;
 
     @Before
     public void setUp() throws Exception {
         reader = new ExcelReader();
-        list = reader.read();
+        list = reader.read("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\RPM\\RPM 2_Tecnico\\RPM_Indice Archivio Tecnico ITA Unico.xls");
     }
 
     @Test

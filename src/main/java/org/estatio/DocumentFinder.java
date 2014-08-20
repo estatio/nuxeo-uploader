@@ -10,26 +10,31 @@ import org.apache.commons.io.FileUtils;
 
 public class DocumentFinder {
 
-    private List<ItalyTechnicalDocument> files;
+    private List<ImportDocument> documents;
 
     public DocumentFinder(String path) {
-        files = new ArrayList<ItalyTechnicalDocument>();
+        documents = new ArrayList<ImportDocument>();
         Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
         Iterator<File> itr = listFiles.iterator();
         while (itr.hasNext()) {
             File file = itr.next();
             if (file.isFile()) {
-                files.add(new ItalyTechnicalDocument(file));
+                documents.add(new ImportDocument(file));
             }
         }
     }
 
-    public void find(final String pattern) {
-
+    public ImportDocument find(final String name) {
+        for (ImportDocument doc : documents) {
+            if (doc.getName().contains(name)) {
+                return doc;
+            }
+        }
+        return null;
     }
 
-    public List<ItalyTechnicalDocument> getFiles() {
-        return files;
+    public List<ImportDocument> getDocuments() {
+        return documents;
     }
 
 }

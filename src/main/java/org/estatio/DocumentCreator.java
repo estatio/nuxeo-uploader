@@ -1,15 +1,17 @@
 package org.estatio;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.print.attribute.standard.Fidelity;
-import javax.swing.text.html.parser.DTD;
 
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
+
+import org.estatio.ImportDocument.DocProperty;
 
 public class DocumentCreator {
 
@@ -29,10 +31,6 @@ public class DocumentCreator {
     public void connect() throws Exception {
         client = new HttpAutomationClient(url);
         session = client.getSession(username, password);
-        // Documents docs = (Documents)
-        // session.newRequest("Document.Query").set(
-        // "query", "SELECT * FROM Document").execute();
-        // System.out.println(docs);
     }
 
     public void disconnect() {
@@ -67,7 +65,24 @@ public class DocumentCreator {
         x.add(new DocumentType("Domain", root));
         x.add(new DocumentType("Country", country));
         x.add(new DocumentType("Property", property));
-        x.add(new DocumentType("Department", department));
+        x.add(new DocumentType("Subject", department));
+        x.add(new DocumentType("Subject", subject));
+        if (subSubject != null) {
+            x.add(new DocumentType("Subject", subSubject));
+        }
+        return findOrCreateParent(x);
+    }
+
+    public Document findOrCreateParent(ImportDocument document) {
+        String property = (String) document.getProperty("def:Property");
+        String department = (String) document.getProperty("def:Department");
+        String subject = (String) document.getProperty("def:Subject");
+        String subSubject = (String) document.getProperty("def:SubSubject");
+        List<DocumentType> x = new ArrayList<DocumentType>();
+        x.add(new DocumentType("Domain", "Test"));
+        x.add(new DocumentType("Country", "Italy"));
+        x.add(new DocumentType("Property", property));
+        x.add(new DocumentType("Subject", department));
         x.add(new DocumentType("Subject", subject));
         if (subSubject != null) {
             x.add(new DocumentType("Subject", subSubject));
@@ -81,12 +96,12 @@ public class DocumentCreator {
             bldr.append("/").append(parentList.get(j).getName());
         }
         Document document = find(bldr.toString());
-        if (document != null) {
-            int x = parentList.size() -1;
+        if (document == null) {
+            int x = parentList.size() - 1;
             ArrayList<DocumentType> sub = new ArrayList<DocumentCreator.DocumentType>(parentList);
-            sub.remove(sub.size()-1);
+            sub.remove(sub.size() - 1);
             Document ownParent = findOrCreateParent(sub);
-            document = findOrCreate(ownParent.getPath(), parentList.get(x).getName(), parentList.get(x).getType());            
+            document = findOrCreate(ownParent.getPath(), parentList.get(x).getName(), parentList.get(x).getType());
         }
         return document;
     }
@@ -130,47 +145,38 @@ public class DocumentCreator {
         return property;
     }
 
-    public void create(ItalyTechnicalDocument doc, String rootPath) throws Exception {
+    public void create(ImportDocument doc) throws Exception {
         if (session == null) {
             connect();
         }
-        Document root;
-        // Fetch the root of Nuxeo repository
-        System.out.println(rootPath);
 
+        Document parent = findOrCreateParent(doc);
         // Instantiate a new Document with the simple constructor
-        Document document = new Document("myDocument", "File");
-        document.set("dc:title", doc.getName());
-        document.set("dc:description", "test description");
-        Document loc = (Document) session.newRequest("Document.Fetch").set("value", "RPM").execute();
+        Document document = new Document(doc.getName(), "ECP_file");
+        for (DocProperty prop : doc.getProperties()) {
+            if (prop.getValue() != null) {
+                document.set(prop.getField(), prop.getValue().toString());
+            }
+        }
         document = (Document) session.newRequest("Document.Create")
                 .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
-                .setInput(loc)
+                .setInput(parent)
                 .set("type", document.getType())
                 .set("name", document.getId())
                 .set("properties", document)
                 .execute();
 
-        System.out.print(document.getPath());
-        // Create a document of File type by setting the parameter
-        // 'properties' // with String metadata values delimited by comma ','
-        document = (Document) session.newRequest("Document.Create")
-                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
-                .setInput(rootPath).set("type", document.getType()).set("name",
-                        document.getId()).set("properties", document).execute();
-
-        // Update the document document = (Document)
-        session.newRequest("Document.Update").setInput(document)
-                .set("properties", document).execute();
-
-        // create a file document //File file = doc.getFile(); //FileBlob fb
-        // = new FileBlob(file);
-        // fb.setMimeType(Files.probeContentType(file.toPath())); // uploading
-        // a file will return null since we used HEADER_NX_VOIDOP
-        // session.newRequest("Blob.Attach") //
-        // .setHeader(Constants.HEADER_NX_VOIDOP, "true") // .setInput(fb)
-        // .set("document", document.getId()) // .execute();
-
+        // create a file document //
+        File file = doc.getFile();
+        if (file != null) {
+            FileBlob fb = new FileBlob(file);
+            fb.setMimeType(Files.probeContentType(file.toPath()));
+            session.newRequest("Blob.Attach")
+                    .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+                    .setInput(fb)
+                    .set("document", document.getId())
+                    .execute();
+        }
     }
 
 }

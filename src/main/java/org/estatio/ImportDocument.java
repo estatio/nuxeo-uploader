@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.joda.time.LocalDate;
 
-public class ItalyTechnicalDocument {
+public class ImportDocument {
 
     class DocProperty {
 
@@ -30,23 +30,23 @@ public class ItalyTechnicalDocument {
     }
 
     private String name;
-
+    private String id;
     private LocalDate date;
-
     private File file;
-
+    private boolean processed;
     private List<DocProperty> properties;
 
-    public ItalyTechnicalDocument(String name, LocalDate date) {
+    public ImportDocument(String name, LocalDate date) {
         super();
         this.name = name;
         this.date = date;
-        this.properties = new ArrayList<ItalyTechnicalDocument.DocProperty>();
+        this.properties = new ArrayList<ImportDocument.DocProperty>();
     }
 
-    public ItalyTechnicalDocument(File file) {
+    public ImportDocument(File file) {
         this.file = file;
         this.name = file.getName();
+        this.properties = new ArrayList<ImportDocument.DocProperty>();
     }
 
     public String getName() {
@@ -69,6 +69,10 @@ public class ItalyTechnicalDocument {
         return file;
     }
 
+    public void setFile(File file) {
+        this.file = file;
+    }
+
     public void addProperty(String field, Object value) {
         properties.add(new DocProperty(field, value));
     }
@@ -83,6 +87,10 @@ public class ItalyTechnicalDocument {
 
     }
 
+    public List<DocProperty> getProperties() {
+        return properties;
+    }
+
     String dumpProperties() {
         StringBuilder bld = new StringBuilder();
         for (DocProperty property : properties) {
@@ -92,6 +100,14 @@ public class ItalyTechnicalDocument {
             bld.append(System.getProperty("line.separator"));
         }
         return bld.toString();
+    }
+
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
+    }
+
+    public boolean isProcessed() {
+        return this.processed;
     }
 
 }
