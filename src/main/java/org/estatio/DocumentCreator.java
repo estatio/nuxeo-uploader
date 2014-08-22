@@ -79,7 +79,7 @@ public class DocumentCreator {
         String subject = (String) document.getProperty("def:Subject");
         String subSubject = (String) document.getProperty("def:SubSubject");
         List<DocumentType> x = new ArrayList<DocumentType>();
-        x.add(new DocumentType("Domain", "Test"));
+        x.add(new DocumentType("Domain", "ECPIT Technical Archive"));
         x.add(new DocumentType("Country", "Italy"));
         x.add(new DocumentType("Property", property));
         x.add(new DocumentType("Subject", department));

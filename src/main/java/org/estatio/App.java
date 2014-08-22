@@ -8,13 +8,16 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class App
 {
+
     public static void main(String[] args)
     {
-        String properties = "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
-        // String properties = "CAR";
+        boolean persist = false;
+
+        // String properties =
+        // "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
+        String properties = "GIG";
         // String properties = "LAM,LEO,RPG,RPM";
 
-        
         for (String property : properties.split(",")) {
             long tStart = System.currentTimeMillis();
             System.out.println("--------------------------------------------------------------------------------");
@@ -56,7 +59,9 @@ public class App
                     }
                     doc.setFile(file);
                     countFilesImported++;
-                    creator.create(doc);
+                    if (persist) {
+                        creator.create(doc);
+                    }
                 }
                 System.out.println("--------------------------------------------------------------------------------");
                 System.out.println(String.format("Start processing files %s", property));
@@ -79,7 +84,7 @@ public class App
             long tEnd = System.currentTimeMillis();
             long tDelta = tEnd - tStart;
             double elapsedSeconds = tDelta / 1000.0;
-            
+
             System.out.println("--------------------------------------------------------------------------------");
             System.out.println(String.format("Summary for %s:", property));
             System.out.println(String.format("TotalExcelRows            : %d", totalExcelRows));

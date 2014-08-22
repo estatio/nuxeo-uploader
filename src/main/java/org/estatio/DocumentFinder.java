@@ -26,7 +26,11 @@ public class DocumentFinder {
 
     public ImportDocument find(final String name) {
         for (ImportDocument doc : documents) {
-            if (doc.getName().contains(name)) {
+            //fix wrong filenames
+            String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
+            //fix wrong excel entries
+            String excelName = name.replace("  ", " ");
+            if (fileName.contains(excelName)) {
                 return doc;
             }
         }
