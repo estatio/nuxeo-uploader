@@ -63,6 +63,7 @@ public class ExcelReader {
                 doc.addProperty("def:Date", date);
                 doc.addProperty("dc:title", fileName);
                 doc.addProperty("def:Note", stringOfCell(row.getCell(24)));
+                doc.addProperty("dc:expired", getExpirationDate(row));
                 doc.addProperty("def:Cadastral", "");
                 doc.addProperty("dc:description", stringOfCell(row.getCell(8)));
                 doc.addProperty("def:DocumentNumber", stringOfCell(row.getCell(18)));
@@ -75,12 +76,53 @@ public class ExcelReader {
                 doc.addProperty("def:Subject", StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2));
                 doc.addProperty("def:SubSubject", stringOfCell(row.getCell(2)).length() > 2 ? stringOfCell(row.getCell(2)) : null);
                 doc.addProperty("def:Brand", stringOfCell(row.getCell(10)));
-
+                try{
+                    System.out.println(doc.getProperty("dc:Expired").toString());
+                }catch(Exception e){
+                           
+                }
                 documents.add(doc);
-
             }
         }
         return documents;
+    }
+    private LocalDate getExpirationDate(Row row){
+        String expirationString="";
+        LocalDate expirationDate=null;
+        if(stringOfCell(row.getCell(28))!=""&&row.getCell(28)!=null){
+            expirationString+=stringOfCell(row.getCell(28));
+            expirationString+=getDate(row);
+            expirationString+=getDay(row);
+            try{
+                expirationDate=LocalDate.parse(expirationString, DateTimeFormat.forPattern("yyyyMMdd"));
+                return expirationDate;
+            }catch(Exception e){
+
+            }
+        }
+        return null;
+    }
+    private String getDate(Row row){
+        if(stringOfCell(row.getCell(27))!=null){
+            if(stringOfCell(row.getCell(27)).length()==2){
+                return stringOfCell(row.getCell(27));
+            }
+            if(stringOfCell(row.getCell(27)).length()<2){
+                return "0"+stringOfCell(row.getCell(27));
+            }
+        }
+        return "01";
+    }
+    private String getDay(Row row){
+        if(stringOfCell(row.getCell(26))!=null){
+            if(stringOfCell(row.getCell(26)).length()==2){
+                return stringOfCell(row.getCell(26));
+            }
+            if(stringOfCell(row.getCell(26)).length()<2){
+                return "0"+stringOfCell(row.getCell(26));
+            }
+        }
+        return "01";
     }
 
     private String returnFileType(Cell cell) {
