@@ -38,16 +38,19 @@ public class ExcelReader {
         while (itr.hasNext()) {
             Row row = itr.next();
             Cell cell = row.getCell(5);
+//            if(stringOfCell(row.getCell(6)).equals("FOTOGRAFIE")){
+//                System.out.println(stringOfCell(row.getCell(6)));
+//            }
 
-            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC && cell.getNumericCellValue() == 1) {
-
+            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC && cell.getNumericCellValue()>0) {
+               
                 String fileName = String.format(
                         "%s %s.%s.%s.%s",
                         stringOfCell(row.getCell(0)),
                         stringOfCell(row.getCell(1)),
                         stringOfCell(row.getCell(2)),
                         stringOfCell(row.getCell(3)),
-                        stringOfCell(row.getCell(4)));
+                        stringOfCell(row.getCell(4))).replace("..", ".");
                 LocalDate date = null;
 
                 String dateStr = StringUtils.substring(stringOfCell(row.getCell(3)).concat("0101"), 0, 8);
@@ -103,7 +106,7 @@ public class ExcelReader {
         return null;
     }
     private String getDate(Row row){
-        if(stringOfCell(row.getCell(27))!=null){
+        if(stringOfCell(row.getCell(27))!=""){
             if(stringOfCell(row.getCell(27)).length()==2){
                 return stringOfCell(row.getCell(27));
             }
@@ -114,7 +117,7 @@ public class ExcelReader {
         return "01";
     }
     private String getDay(Row row){
-        if(stringOfCell(row.getCell(26))!=null){
+        if(stringOfCell(row.getCell(26))!=""){
             if(stringOfCell(row.getCell(26)).length()==2){
                 return stringOfCell(row.getCell(26));
             }
@@ -132,7 +135,7 @@ public class ExcelReader {
 
     private String stringOfCell(Cell cell) {
         if (cell == null) {
-            return null;
+            return "";
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
         return cell.getStringCellValue().trim();

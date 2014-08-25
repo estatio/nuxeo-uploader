@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.poifs.storage.BlockList;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
@@ -145,7 +146,7 @@ public class DocumentCreator {
         return property;
     }
 
-    public void create(ImportDocument doc) throws Exception {
+    public Document create(ImportDocument doc) throws Exception {
         if (session == null) {
             connect();
         }
@@ -166,8 +167,14 @@ public class DocumentCreator {
                 .set("properties", document)
                 .execute();
 
+        return document;
+    }
+
+    public Document attach(Document document, ImportDocument doc) throws Exception {
         // create a file document //
         File file = doc.getFile();
+
+        
         if (file != null) {
             FileBlob fb = new FileBlob(file);
             fb.setMimeType(Files.probeContentType(file.toPath()));
@@ -177,6 +184,20 @@ public class DocumentCreator {
                     .set("document", document.getId())
                     .execute();
         }
+        return document;
     }
-
+//    public Document attachMore(Document document, ImportDocument doc) throws Exception {
+//        // create a file document //
+//        File file = doc.getFile();
+//        if (file != null) {
+//            FileBlob fb = new FileBlob(file);
+//            fb.setMimeType(Files.probeContentType(file.toPath()));
+//            session.newRequest("BlobHolder.Attach")
+//                    .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+//                    .setInput(fb)
+//                    .set("file", file)
+//                    .execute();
+//        }
+//        return document;
+//    }
 }

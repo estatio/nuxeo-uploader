@@ -5,17 +5,17 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.nuxeo.ecm.automation.client.model.Document;
 
 public class App
 {
 
     public static void main(String[] args)
     {
-        boolean persist = false;
+        boolean persist = true;
 
-        // String properties =
-        // "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
-        String properties = "GIG";
+        String properties = "CAG";// ,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
+        // String properties = "GIG";
         // String properties = "LAM,LEO,RPG,RPM";
 
         for (String property : properties.split(",")) {
@@ -34,34 +34,41 @@ public class App
             try {
                 DocumentFinder finder = new DocumentFinder(path);
                 ExcelReader reader = new ExcelReader();
-                List<ImportDocument> docs = reader.read(excelFile);
-                totalExcelRows = docs.size();
+                List<ImportDocument> excelDocs = reader.read(excelFile);
+                totalExcelRows = excelDocs.size();
                 totalFiles = finder.getDocuments().size();
                 DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo02:8080/nuxeo/site/automation", "Administrator", "Administrator");
-                for (ImportDocument doc : docs) {
+                for (ImportDocument doc : excelDocs) {
                     File file = null;
                     String note = (String) doc.getProperty("def:Note");
-                    ImportDocument fileDoc = finder.find(doc.getName().concat("."));
-                    if (fileDoc == null) {
+                    List<ImportDocument> fileDocs = finder.findAll(doc.getName().concat("."));
+                    if (fileDocs.size() == 0) {
                         if (note != null && !note.contains("manca")) {
                             System.out.println(String.format("[%s] not found on file system. Note: [%s]", doc.getName(), note != null ? note : ""));
                             countFilesNotFound++;
                             continue;
                         }
-                    } else {
+                    }
+
+                    Document nuxeoDoc = null;
+
+                    if (persist) {
+                        nuxeoDoc = creator.create(doc);
+                    }
+
+                    for (ImportDocument fileDoc : fileDocs) {
+                        int filesAmount = 0; 
                         if (fileDoc.isProcessed()) {
                             System.out.println(String.format("[%s] accessed multiple times!", doc.getName()));
                             countFilesAccessedMultipleTimes++;
                             continue;
                         }
-                        file = fileDoc.getFile();
+                        creator.attach(nuxeoDoc, fileDoc);
                         fileDoc.setProcessed(true);
                     }
-                    doc.setFile(file);
+
+                    //doc.setFile(file);
                     countFilesImported++;
-                    if (persist) {
-                        creator.create(doc);
-                    }
                 }
                 System.out.println("--------------------------------------------------------------------------------");
                 System.out.println(String.format("Start processing files %s", property));

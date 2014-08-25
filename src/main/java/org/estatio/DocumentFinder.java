@@ -25,16 +25,33 @@ public class DocumentFinder {
     }
 
     public ImportDocument find(final String name) {
+        System.out.println(name.replace("..", "."));
         for (ImportDocument doc : documents) {
             //fix wrong filenames
             String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
             //fix wrong excel entries
-            String excelName = name.replace("  ", " ");
+            String excelName = name.replace("  ", " ").replace("..", ".");
+            
             if (fileName.contains(excelName)) {
                 return doc;
             }
         }
         return null;
+    }
+
+    public List<ImportDocument> findAll(final String name) {
+        List<ImportDocument> result = new ArrayList<ImportDocument>();
+        for (ImportDocument doc : documents) {
+            //fix wrong filenames
+            String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
+            //fix wrong excel entries
+            String excelName = name.replace("  ", " ").replace("..", ".");
+            
+            if (fileName.contains(excelName)) {
+                result.add(doc);
+            }
+        }
+        return result;
     }
 
     public List<ImportDocument> getDocuments() {
