@@ -34,7 +34,7 @@ public class DocumentCreatorTest {
         cr.delete(TEST_ROOT + TEST_COUNTRY);
         doc2 = new ImportDocument(new File(TEST_FILE2));
         doc = new ImportDocument(new File(TEST_FILE));
-        doc.setName("Test");
+        doc.setName("n° CAR 2.E.19971217");
         doc.addProperty("def:Property", "RPM");
         doc.addProperty("def:Department", "2");
         doc.addProperty("def:Subject", "A");
@@ -42,10 +42,10 @@ public class DocumentCreatorTest {
         
         
         doc.addProperty("def:Date", new LocalDate(2011,1,1));
-        doc.addProperty("dc:title", "Test");
+        doc.addProperty("dc:title", " n° CAR 2.E.19971217");
         doc.addProperty("def:Note", "Note");
         doc.addProperty("dc:expired", new LocalDate(2100,1,1));
-        doc.addProperty("def:Cadastral", "Cadastral");
+        doc.addProperty("def:Cadastral", "14.43.857");
         doc.addProperty("dc:description", "Description");
         doc.addProperty("def:DocumentNumber", "999");
         doc.addProperty("def:Asset", "Asset");
@@ -93,7 +93,7 @@ public class DocumentCreatorTest {
         assertNotNull(nuxeoDoc);
         assertThat(nuxeoDoc.getPath(), is("/ECPIT Technical Archive/Italy/RPM/2/A/Test"));
         cr.attach(nuxeoDoc, doc);
-        cr.attach(nuxeoDoc, doc2);
+        //cr.attachMore(nuxeoDoc, doc2);
 
     }
     

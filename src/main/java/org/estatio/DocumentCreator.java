@@ -8,7 +8,9 @@ import java.util.List;
 import org.apache.poi.poifs.storage.BlockList;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
+import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 
@@ -127,6 +129,7 @@ public class DocumentCreator {
     }
 
     public Document findOrCreate(String path, String name, String type) {
+
         Document root = find(path);
         Document property = null;
         if (find(path + "/" + name) == null) {
@@ -166,7 +169,6 @@ public class DocumentCreator {
                 .set("name", document.getId())
                 .set("properties", document)
                 .execute();
-
         return document;
     }
 
@@ -174,30 +176,25 @@ public class DocumentCreator {
         // create a file document //
         File file = doc.getFile();
 
-        
         if (file != null) {
             FileBlob fb = new FileBlob(file);
             fb.setMimeType(Files.probeContentType(file.toPath()));
             session.newRequest("Blob.Attach")
-                    .setHeader(Constants.HEADER_NX_VOIDOP, "true")
-                    .setInput(fb)
-                    .set("document", document.getId())
-                    .execute();
+            .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+            .setInput(fb)
+            .set("document", document.getId())
+            .execute();
         }
         return document;
     }
-//    public Document attachMore(Document document, ImportDocument doc) throws Exception {
-//        // create a file document //
-//        File file = doc.getFile();
-//        if (file != null) {
-//            FileBlob fb = new FileBlob(file);
-//            fb.setMimeType(Files.probeContentType(file.toPath()));
-//            session.newRequest("BlobHolder.Attach")
-//                    .setHeader(Constants.HEADER_NX_VOIDOP, "true")
-//                    .setInput(fb)
-//                    .set("file", file)
-//                    .execute();
-//        }
-//        return document;
-//    }
+
+    public void attachMore(Document document, ImportDocument doc) throws Exception {
+        // create a file document //
+        DocumentService rs = session.getAdapter(DocumentService.class);
+        String docId = document.getId();
+        File file = doc.getFile();
+        DocRef docRef = new DocRef(docId);
+        FileBlob fb = new FileBlob(file);
+        rs.setBlob(docRef, fb, "files:files");
+    }
 }

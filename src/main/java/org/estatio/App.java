@@ -14,7 +14,7 @@ public class App
     {
         boolean persist = true;
 
-        String properties = "CAG";// ,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
+        String properties = "CAG,CAS,CRE,CUR";
         // String properties = "GIG";
         // String properties = "LAM,LEO,RPG,RPM";
 
@@ -53,31 +53,31 @@ public class App
                     Document nuxeoDoc = null;
 
                     if (persist) {
-                        nuxeoDoc = creator.create(doc);
-                    }
-
-                    for (ImportDocument fileDoc : fileDocs) {
-                        int filesAmount = 0; 
-                        if (fileDoc.isProcessed()) {
-                            System.out.println(String.format("[%s] accessed multiple times!", doc.getName()));
-                            countFilesAccessedMultipleTimes++;
-                            continue;
+                    nuxeoDoc = creator.create(doc);
+                    if(fileDocs.size()>1){
+                        creator.attach(nuxeoDoc, fileDocs.get(0));
+                        fileDocs.get(0).setProcessed(true);
+                        for(int i =1; i<fileDocs.size(); i++){
+                            creator.attachMore(nuxeoDoc, fileDocs.get(i));
+                            fileDocs.get(i).setProcessed(true);
                         }
-                        creator.attach(nuxeoDoc, fileDoc);
-                        fileDoc.setProcessed(true);
+                        
+                        countFilesImported+=fileDocs.size();
                     }
-
-                    //doc.setFile(file);
-                    countFilesImported++;
+                    else if(fileDocs.size()==1){
+                        creator.attach(nuxeoDoc, fileDocs.get(0));
+                        fileDocs.get(0).setProcessed(true);
+                        countFilesNotFound++;
+                    }
                 }
-                System.out.println("--------------------------------------------------------------------------------");
-                System.out.println(String.format("Start processing files %s", property));
+                }
                 for (ImportDocument fileDoc : finder.getDocuments()) {
                     if (!fileDoc.isProcessed()) {
                         System.out.println(String.format("[%s] is found on filesytem but is not in spreadsheet", fileDoc.getName()));
                         countFilesNotInExcel++;
                     }
                 }
+                
             } catch (InvalidFormatException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

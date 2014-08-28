@@ -65,7 +65,7 @@ public class ExcelReader {
                 doc.addProperty("def:Property", stringOfCell(row.getCell(0)));
                 doc.addProperty("def:Date", date);
                 doc.addProperty("dc:title", fileName);
-                doc.addProperty("def:Note", stringOfCell(row.getCell(24)));
+                doc.addProperty("def:Note", stringOfCell(row.getCell(24)).replace("\n", " "));
                 doc.addProperty("dc:expired", getExpirationDate(row));
                 doc.addProperty("def:Cadastral", "");
                 doc.addProperty("dc:description", stringOfCell(row.getCell(8)));
@@ -138,7 +138,7 @@ public class ExcelReader {
             return "";
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
-        return cell.getStringCellValue().trim();
+        return cell.getStringCellValue().trim().replace("\n", " ");
 
         // DataFormatter fmt = new DataFormatter();
         // CellReference cr = new CellReference(cell);
