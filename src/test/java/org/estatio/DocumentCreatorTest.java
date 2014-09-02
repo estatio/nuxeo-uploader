@@ -1,13 +1,10 @@
 package org.estatio;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +31,7 @@ public class DocumentCreatorTest {
         cr.delete(TEST_ROOT + TEST_COUNTRY);
         doc2 = new ImportDocument(new File(TEST_FILE2));
         doc = new ImportDocument(new File(TEST_FILE));
-        doc.setName("n° CAR 2.E.19971217");
+        doc.setName("Test");
         doc.addProperty("def:Property", "RPM");
         doc.addProperty("def:Department", "2");
         doc.addProperty("def:Subject", "A");
@@ -90,10 +87,11 @@ public class DocumentCreatorTest {
     @Test 
     public void test6() throws Exception {
         Document nuxeoDoc = cr.create(doc);
-        assertNotNull(nuxeoDoc);
-        assertThat(nuxeoDoc.getPath(), is("/ECPIT Technical Archive/Italy/RPM/2/A/Test"));
+        cr.attachMore(nuxeoDoc, doc);
         cr.attach(nuxeoDoc, doc);
-        //cr.attachMore(nuxeoDoc, doc2);
+        cr.addEntryToMultiValued(nuxeoDoc, "def:Cadastral", "testvalue" );
+        assertNotNull(nuxeoDoc);
+        
 
     }
     

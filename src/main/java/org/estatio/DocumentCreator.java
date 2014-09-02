@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.poifs.storage.BlockList;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
@@ -82,7 +81,7 @@ public class DocumentCreator {
         String subject = (String) document.getProperty("def:Subject");
         String subSubject = (String) document.getProperty("def:SubSubject");
         List<DocumentType> x = new ArrayList<DocumentType>();
-        x.add(new DocumentType("Domain", "ECPIT Technical Archive"));
+        x.add(new DocumentType("Domain", "Test"));
         x.add(new DocumentType("Country", "Italy"));
         x.add(new DocumentType("Property", property));
         x.add(new DocumentType("Subject", department));
@@ -187,7 +186,21 @@ public class DocumentCreator {
         }
         return document;
     }
-
+    public void addEntryToMultiValued(Document document, String key, String value){
+    	
+    	try {
+			session.newRequest("AddEntryToMultivaluedProperty")
+				.setInput("/Test/Italy/RPM/2/A/testfile")
+				.set("value", value)
+				.set("xpath", "def:Cadastral")
+				.execute();
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
     public void attachMore(Document document, ImportDocument doc) throws Exception {
         // create a file document //
         DocumentService rs = session.getAdapter(DocumentService.class);
