@@ -67,7 +67,7 @@ public class ExcelReader {
                 doc.addProperty("dc:title", fileName);
                 doc.addProperty("def:Note", stringOfCell(row.getCell(24)).replace("\n", " "));
                 doc.addProperty("dc:expired", getExpirationDate(row));
-                doc.addProperty("def:Cadastral", "");
+                doc.addProperty("def:Cadastral", getCadastrals(row));
                 doc.addProperty("dc:description", stringOfCell(row.getCell(8)));
                 doc.addProperty("def:DocumentNumber", stringOfCell(row.getCell(18)));
                 doc.addProperty("def:Asset", stringOfCell(row.getCell(9)));
@@ -88,6 +88,19 @@ public class ExcelReader {
             }
         }
         return documents;
+    }
+    private String getCadastrals(Row row){
+        String cadastral = "";
+        if(stringOfCell(row.getCell(14)).contains("-")){
+            String [] strings = stringOfCell(row.getCell(14)).split("-");
+            for(String s : strings){
+                cadastral+= stringOfCell(row.getCell(12))+"."+stringOfCell(row.getCell(13))+"."+s+"|";
+            }
+        }
+        else{
+            cadastral+=stringOfCell(row.getCell(12))+"."+stringOfCell(row.getCell(13))+"."+stringOfCell(row.getCell(14));
+        }
+        return cadastral;
     }
     private LocalDate getExpirationDate(Row row){
         String expirationString="";

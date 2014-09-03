@@ -42,7 +42,7 @@ public class DocumentCreatorTest {
         doc.addProperty("dc:title", " n° CAR 2.E.19971217");
         doc.addProperty("def:Note", "Note");
         doc.addProperty("dc:expired", new LocalDate(2100,1,1));
-        doc.addProperty("def:Cadastral", "14.43.857");
+        doc.addProperty("def:Cadastral", "318.69.687"); // Das mooi!
         doc.addProperty("dc:description", "Description");
         doc.addProperty("def:DocumentNumber", "999");
         doc.addProperty("def:Asset", "Asset");
@@ -89,7 +89,6 @@ public class DocumentCreatorTest {
         Document nuxeoDoc = cr.create(doc);
         cr.attachMore(nuxeoDoc, doc);
         cr.attach(nuxeoDoc, doc);
-        cr.addEntryToMultiValued(nuxeoDoc, "def:Cadastral", "testvalue" );
         assertNotNull(nuxeoDoc);
         
 

@@ -14,7 +14,7 @@ public class App
     {
         boolean persist = true;
 
-        String properties = "CAG,CAS,CRE,CUR";
+        String properties = "RPM";
         // String properties = "GIG";
         // String properties = "LAM,LEO,RPG,RPM";
 
@@ -67,7 +67,7 @@ public class App
                     else if(fileDocs.size()==1){
                         creator.attach(nuxeoDoc, fileDocs.get(0));
                         fileDocs.get(0).setProcessed(true);
-                        countFilesNotFound++;
+                        countFilesImported++;
                     }
                 }
                 }
