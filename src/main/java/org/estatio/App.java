@@ -14,7 +14,7 @@ public class App
     {
         boolean persist = true;
 
-        String properties = "RPM";
+        String properties = "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
         // String properties = "GIG";
         // String properties = "LAM,LEO,RPG,RPM";
 
@@ -37,7 +37,7 @@ public class App
                 List<ImportDocument> excelDocs = reader.read(excelFile);
                 totalExcelRows = excelDocs.size();
                 totalFiles = finder.getDocuments().size();
-                DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo02:8080/nuxeo/site/automation", "Administrator", "Administrator");
+                DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo01.ecp.loc:8080/nuxeo/site/automation", "Administrator", "Administrator");
                 for (ImportDocument doc : excelDocs) {
                     File file = null;
                     String note = (String) doc.getProperty("def:Note");
@@ -53,23 +53,23 @@ public class App
                     Document nuxeoDoc = null;
 
                     if (persist) {
-                    nuxeoDoc = creator.create(doc);
-                    if(fileDocs.size()>1){
-                        creator.attach(nuxeoDoc, fileDocs.get(0));
-                        fileDocs.get(0).setProcessed(true);
-                        for(int i =1; i<fileDocs.size(); i++){
-                            creator.attachMore(nuxeoDoc, fileDocs.get(i));
-                            fileDocs.get(i).setProcessed(true);
+                        //nuxeoDoc = creator.create(doc);
+                        if (fileDocs.size() > 1) {
+                            //creator.attach(nuxeoDoc, fileDocs.get(0));
+                            fileDocs.get(0).setProcessed(true);
+                            for (int i = 1; i < fileDocs.size(); i++) {
+                                //creator.attachMore(nuxeoDoc, fileDocs.get(i));
+                                fileDocs.get(i).setProcessed(true);
+                            }
+
+                            countFilesImported += fileDocs.size();
                         }
-                        
-                        countFilesImported+=fileDocs.size();
+                        else if (fileDocs.size() == 1) {
+                            //creator.attach(nuxeoDoc, fileDocs.get(0));
+                            fileDocs.get(0).setProcessed(true);
+                            countFilesImported++;
+                        }
                     }
-                    else if(fileDocs.size()==1){
-                        creator.attach(nuxeoDoc, fileDocs.get(0));
-                        fileDocs.get(0).setProcessed(true);
-                        countFilesImported++;
-                    }
-                }
                 }
                 for (ImportDocument fileDoc : finder.getDocuments()) {
                     if (!fileDoc.isProcessed()) {
@@ -77,7 +77,7 @@ public class App
                         countFilesNotInExcel++;
                     }
                 }
-                
+
             } catch (InvalidFormatException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
