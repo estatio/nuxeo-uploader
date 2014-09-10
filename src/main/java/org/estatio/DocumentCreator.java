@@ -1,7 +1,6 @@
 package org.estatio;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +22,14 @@ public class DocumentCreator {
     private String url;
     private String username;
     private String password;
+    private boolean dryRun;
 
     public DocumentCreator(String url, String username, String password) {
         super();
         this.url = url;
         this.username = username;
         this.password = password;
+        this.dryRun = true;
     }
 
     public void connect() throws Exception {
@@ -82,7 +83,7 @@ public class DocumentCreator {
         String subject = (String) document.getProperty("def:Subject");
         String subSubject = (String) document.getProperty("def:SubSubject");
         List<DocumentType> x = new ArrayList<DocumentType>();
-        x.add(new DocumentType("Domain", "ECPIT Technical Archive"));
+        x.add(new DocumentType("Domain", "Technical Archive"));
         x.add(new DocumentType("Country", "Italy"));
         x.add(new DocumentType("Property", property));
         x.add(new DocumentType("Subject", department));
@@ -158,10 +159,10 @@ public class DocumentCreator {
         // Instantiate a new Document with the simple constructor
         Document document = new Document(doc.getName(), "ECP_file");
         for (DocProperty prop : doc.getProperties()) {
-            if (prop.getValue() != null && prop.getField()!="def:Cadastral") {
+            if (prop.getValue() != null && prop.getField() != "def:Cadastral") {
                 document.set(prop.getField(), prop.getValue().toString());
-                }
             }
+        }
         document = (Document) session.newRequest("Document.Create")
                 .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
                 .setInput(parent)
@@ -169,58 +170,45 @@ public class DocumentCreator {
                 .set("name", document.getId())
                 .set("properties", document)
                 .execute();
-        if(doc.getProperty("def:Cadastral").toString()!=null){
+        if (doc.getProperty("def:Cadastral").toString() != null) {
             createCadastrals(document, doc.getProperty("def:Cadastral").toString());
 
         }
         return document;
     }
-    private void createCadastrals(Document document, String cadastrals){
-        char[]array = cadastrals.toCharArray();
+
+    private void createCadastrals(Document document, String cadastrals) {
+        char[] array = cadastrals.toCharArray();
         String cadastral = "";
-        for(int i =0; i<array.length; i++){
-            if(array[i]== '|'){
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == '|') {
                 addEntryToMultiValued(document, "def:Cadastral", cadastral);
                 cadastral = "";
             }
-            else{
-                cadastral+=array[i];
+            else {
+                cadastral += array[i];
             }
         }
-        if(cadastral!=""){
-                    addEntryToMultiValued(document, "def:Cadastral", cadastral);
+        if (cadastral != "") {
+            addEntryToMultiValued(document, "def:Cadastral", cadastral);
         }
     }
+
     public Document attach(Document document, ImportDocument doc) throws Exception {
         // create a file document //
         File file = doc.getFile();
-
         if (file != null) {
             FileBlob fb = new FileBlob(file);
             fb.setMimeType(Files.probeContentType(file.toPath()));
             session.newRequest("Blob.Attach")
-            .setHeader(Constants.HEADER_NX_VOIDOP, "true")
-            .setInput(fb)
-            .set("document", document.getId())
-            .execute();
+                    .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+                    .setInput(fb)
+                    .set("document", document.getId())
+                    .execute();
         }
         return document;
     }
-    public void addEntryToMultiValued(Document document, String key, String value){
-    	String path = document.getPath();
-    	try {
-			session.newRequest("AddEntryToMultivaluedProperty")
-				.setInput(path)
-				.set("value", value)
-				.set("xpath", key)
-				.execute();
-		
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    }
+
     public void attachMore(Document document, ImportDocument doc) throws Exception {
         // create a file document //
         DocumentService rs = session.getAdapter(DocumentService.class);
@@ -228,6 +216,24 @@ public class DocumentCreator {
         File file = doc.getFile();
         DocRef docRef = new DocRef(docId);
         FileBlob fb = new FileBlob(file);
+        fb.setMimeType(Files.probeContentType(file.toPath()));
         rs.setBlob(docRef, fb, "files:files");
     }
+
+    public void addEntryToMultiValued(Document document, String key, String value) {
+        String path = document.getPath();
+        try {
+            session.newRequest("AddEntryToMultivaluedProperty")
+                    .setInput(path)
+                    .set("value", value)
+                    .set("xpath", key)
+                    .execute();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
 }

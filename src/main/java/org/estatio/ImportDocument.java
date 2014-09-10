@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.IIOException;
+
 import org.joda.time.LocalDate;
 
 public class ImportDocument {
@@ -103,6 +105,9 @@ public class ImportDocument {
     }
 
     public void setProcessed(boolean processed) {
+        if (processed == this.processed){
+            throw new IllegalArgumentException(String.format("[%s] is already processed", getName()));
+        }
         this.processed = processed;
     }
 

@@ -39,6 +39,7 @@ public class App
                 totalFiles = finder.getDocuments().size();
                 DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo01.ecp.loc:8080/nuxeo/site/automation", "Administrator", "Administrator");
                 for (ImportDocument doc : excelDocs) {
+                    System.out.print(".");
                     File file = null;
                     String note = (String) doc.getProperty("def:Note");
                     List<ImportDocument> fileDocs = finder.findAll(doc.getName().concat("."));
@@ -53,24 +54,31 @@ public class App
                     Document nuxeoDoc = null;
 
                     if (persist) {
-                        //nuxeoDoc = creator.create(doc);
-                        if (fileDocs.size() > 1) {
-                            //creator.attach(nuxeoDoc, fileDocs.get(0));
-                            fileDocs.get(0).setProcessed(true);
-                            for (int i = 1; i < fileDocs.size(); i++) {
-                                //creator.attachMore(nuxeoDoc, fileDocs.get(i));
-                                fileDocs.get(i).setProcessed(true);
-                            }
-
-                            countFilesImported += fileDocs.size();
-                        }
-                        else if (fileDocs.size() == 1) {
-                            //creator.attach(nuxeoDoc, fileDocs.get(0));
-                            fileDocs.get(0).setProcessed(true);
-                            countFilesImported++;
-                        }
+                        nuxeoDoc = creator.create(doc);
                     }
+                    for (ImportDocument fileDoc : fileDocs) {
+                        if (persist) {
+                            creator.attachMore(nuxeoDoc, fileDoc);
+                        }
+                        fileDoc.setProcessed(true);
+                    }
+
+                    // if (fileDocs.size() > 1) {
+                    // creator.attach(nuxeoDoc, fileDocs.get(0));
+                    // fileDocs.get(0).setProcessed(true);
+                    // for (int i = 1; i < fileDocs.size(); i++) {
+                    // creator.attachMore(nuxeoDoc, fileDocs.get(i));
+                    // fileDocs.get(i).setProcessed(true);
+                    // }
+                    // countFilesImported += fileDocs.size();
+                    // }
+                    // else if (fileDocs.size() == 1) {
+                    // creator.attach(nuxeoDoc, fileDocs.get(0));
+                    // fileDocs.get(0).setProcessed(true);
+                    // countFilesImported++;
+                    // }
                 }
+                System.out.println("");
                 for (ImportDocument fileDoc : finder.getDocuments()) {
                     if (!fileDoc.isProcessed()) {
                         System.out.println(String.format("[%s] is found on filesytem but is not in spreadsheet", fileDoc.getName()));

@@ -1,13 +1,11 @@
 package org.estatio;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
 public class DocumentFinderTest {
-
 
     @Test
     public void test() {
@@ -18,6 +16,6 @@ public class DocumentFinderTest {
     @Test
     public void testFind() throws Exception {
         DocumentFinder finder = new DocumentFinder("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\CAR");
-        assertNotNull(finder.find("CAR 2.E.20081024.7.1"));
+        assertThat(finder.findAll("CAR 2.E.20081024.7.1").size(), is(1));
     }
 }
