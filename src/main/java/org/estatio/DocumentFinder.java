@@ -14,11 +14,14 @@ public class DocumentFinder {
 
     public DocumentFinder(String path) {
         documents = new ArrayList<ImportDocument>();
+        
+        
+        
         Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
         Iterator<File> itr = listFiles.iterator();
         while (itr.hasNext()) {
             File file = itr.next();
-            if (file.isFile()) {
+            if (file.isFile() && !file.getName().startsWith(".") && !file.getName().contains("Indice Archivio Tecnico ITA")) {
                 documents.add(new ImportDocument(file));
             }
         }
@@ -26,16 +29,17 @@ public class DocumentFinder {
 
     public List<ImportDocument> findAll(final String name) {
         List<ImportDocument> result = new ArrayList<ImportDocument>();
-        //fix wrong excel entries
-        String excelName = name.replace("  ", " ").replace("..", ".");
+        // fix wrong excel entries
+        if (!"RPG 2.D..;RPG 2.E..".contains(name)) {
+            String excelName = name
+                    .replace("  ", " ").replace("..", ".");
+            for (ImportDocument doc : documents) {
+                // fix wrong filenames
+                String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
 
-        for (ImportDocument doc : documents) {
-            //fix wrong filenames
-            String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
-            
-
-            if (fileName.contains(excelName)) {
-                result.add(doc);
+                if (fileName.contains(excelName)) {
+                    result.add(doc);
+                }
             }
         }
         return result;

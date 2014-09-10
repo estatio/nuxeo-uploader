@@ -12,10 +12,10 @@ public class App
 
     public static void main(String[] args)
     {
-        boolean persist = true;
+        boolean persist = false;
 
-        String properties = "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
-        // String properties = "GIG";
+        String properties = "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG";
+        // String properties = "RPG";
         // String properties = "LAM,LEO,RPG,RPM";
 
         for (String property : properties.split(",")) {
@@ -39,7 +39,7 @@ public class App
                 totalFiles = finder.getDocuments().size();
                 DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo01.ecp.loc:8080/nuxeo/site/automation", "Administrator", "Administrator");
                 for (ImportDocument doc : excelDocs) {
-                    System.out.print(".");
+                    // System.out.print(".");
                     File file = null;
                     String note = (String) doc.getProperty("def:Note");
                     List<ImportDocument> fileDocs = finder.findAll(doc.getName().concat("."));
@@ -59,6 +59,10 @@ public class App
                     for (ImportDocument fileDoc : fileDocs) {
                         if (persist) {
                             creator.attachMore(nuxeoDoc, fileDoc);
+                        }
+                        if (fileDoc.isProcessed()) {
+                            // should not be tha case
+                            System.out.println(String.format("Already processed [%s], searched for [%s]", fileDoc.getName(), doc.getName()));
                         }
                         fileDoc.setProcessed(true);
                     }
