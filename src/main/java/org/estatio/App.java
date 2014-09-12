@@ -23,7 +23,18 @@ public class App
             System.out.println("--------------------------------------------------------------------------------");
             System.out.println(String.format("Start processing spreadsheet %s", property));
             String path = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico", property);
-            String excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xls", property);
+            String excelFile="";
+            try{
+                excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xls", property);
+            }catch(Exception e){
+                if(excelFile==""){
+                try{
+                    excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xlsx", property);
+                }catch(Exception f){
+                }
+                }
+            }
+
             int countFilesAccessedMultipleTimes = 0;
             int countFilesNotFound = 0;
             int countFilesNotInExcel = 0;
@@ -84,7 +95,7 @@ public class App
                 }
                 System.out.println("");
                 for (ImportDocument fileDoc : finder.getDocuments()) {
-                    if (!fileDoc.isProcessed()) {
+                    if (!fileDoc.isProcessed()&&!fileDoc.getName().contains(".JPG")&&!fileDoc.getName().contains("Thumbs.db")) {
                         System.out.println(String.format("[%s] is found on filesytem but is not in spreadsheet", fileDoc.getName()));
                         countFilesNotInExcel++;
                     }

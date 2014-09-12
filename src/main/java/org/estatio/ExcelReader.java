@@ -37,12 +37,9 @@ public class ExcelReader {
         Iterator<Row> itr = sheet.rowIterator();
         while (itr.hasNext()) {
             Row row = itr.next();
-            Cell cell = row.getCell(5);
-//            if(stringOfCell(row.getCell(6)).equals("FOTOGRAFIE")){
-//                System.out.println(stringOfCell(row.getCell(6)));
-//            }
-
-            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC && cell.getNumericCellValue()>0) {
+            Cell cell = row.getCell(4);
+            Cell cell5 = row.getCell(5);
+            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC && cell.getNumericCellValue()>0 || cell5 != null && cell5.getCellType() == Cell.CELL_TYPE_NUMERIC && cell5.getNumericCellValue()>0) {
                
                 String fileName = String.format(
                         "%s %s.%s.%s.%s",

@@ -37,7 +37,7 @@ public class DocumentFinder {
                 // fix wrong filenames
                 String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
 
-                if (fileName.contains(excelName)) {
+                if (fileName.contains(excelName)||fileName.contains(excelName.replaceAll("^CRE", "CUR"))||fileName.contains(excelName.replaceAll("^LAM", "FAB"))) {
                     result.add(doc);
                 }
             }
