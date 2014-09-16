@@ -41,12 +41,14 @@ public class ImportDocument {
         this.name = name;
         this.date = date;
         this.properties = new ArrayList<ImportDocument.DocProperty>();
+        this.processed=false;
     }
 
     public ImportDocument(File file) {
         this.file = file;
         this.name = file.getName();
         this.properties = new ArrayList<ImportDocument.DocProperty>();
+        this.processed=false;
     }
 
     public String getName() {

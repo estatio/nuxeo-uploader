@@ -11,7 +11,7 @@ public class App
 {
 
     public static void main(String[] args)
-    {
+    { 
         boolean persist = false;
 
         String properties = "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG";
@@ -28,10 +28,10 @@ public class App
                 excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xls", property);
             }catch(Exception e){
                 if(excelFile==""){
-                try{
-                    excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xlsx", property);
-                }catch(Exception f){
-                }
+                    try{
+                        excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xlsx", property);
+                    }catch(Exception f){
+                    }
                 }
             }
 
@@ -55,7 +55,7 @@ public class App
                     String note = (String) doc.getProperty("def:Note");
                     List<ImportDocument> fileDocs = finder.findAll(doc.getName().concat("."));
                     if (fileDocs.size() == 0) {
-                        if (note != null && !note.contains("manca")) {
+                        if (note != null && !note.contains("manca")&& !note.contains("vedi")&& !doc.getName().contains("jpg")&&!doc.getName().contains("img")) {
                             System.out.println(String.format("[%s] not found on file system. Note: [%s]", doc.getName(), note != null ? note : ""));
                             countFilesNotFound++;
                             continue;
@@ -66,36 +66,26 @@ public class App
 
                     if (persist) {
                         nuxeoDoc = creator.create(doc);
+                        if(fileDocs.size()>1){
+                            creator.attach(nuxeoDoc, fileDocs.get(0));
+                            fileDocs.get(0).setProcessed(true);
+                            for(int i = 1; i<fileDocs.size();i++){
+                                creator.attachMore(nuxeoDoc, fileDocs.get(i));
+                                fileDocs.get(i).setProcessed(true);
+                            }
+                        }else if(fileDocs.size()==1){
+                            creator.attach(nuxeoDoc, fileDocs.get(0));
+                            fileDocs.get(0).setProcessed(true);
+                        }
+                       
                     }
-                    for (ImportDocument fileDoc : fileDocs) {
-                        if (persist) {
-                            creator.attachMore(nuxeoDoc, fileDoc);
-                        }
-                        if (fileDoc.isProcessed()) {
-                            // should not be tha case
-                            System.out.println(String.format("Already processed [%s], searched for [%s]", fileDoc.getName(), doc.getName()));
-                        }
+                    for(ImportDocument fileDoc : fileDocs){
                         fileDoc.setProcessed(true);
                     }
-
-                    // if (fileDocs.size() > 1) {
-                    // creator.attach(nuxeoDoc, fileDocs.get(0));
-                    // fileDocs.get(0).setProcessed(true);
-                    // for (int i = 1; i < fileDocs.size(); i++) {
-                    // creator.attachMore(nuxeoDoc, fileDocs.get(i));
-                    // fileDocs.get(i).setProcessed(true);
-                    // }
-                    // countFilesImported += fileDocs.size();
-                    // }
-                    // else if (fileDocs.size() == 1) {
-                    // creator.attach(nuxeoDoc, fileDocs.get(0));
-                    // fileDocs.get(0).setProcessed(true);
-                    // countFilesImported++;
-                    // }
                 }
                 System.out.println("");
                 for (ImportDocument fileDoc : finder.getDocuments()) {
-                    if (!fileDoc.isProcessed()&&!fileDoc.getName().contains(".JPG")&&!fileDoc.getName().contains("Thumbs.db")) {
+                    if (!fileDoc.isProcessed()&&!fileDoc.getName().contains(".JPG")&&!fileDoc.getName().contains("Thumbs.db")&&!fileDoc.getName().contains("jpg")&&!fileDoc.getName().contains("img")) {
                         System.out.println(String.format("[%s] is found on filesytem but is not in spreadsheet", fileDoc.getName()));
                         countFilesNotInExcel++;
                     }

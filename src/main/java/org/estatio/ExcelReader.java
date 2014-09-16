@@ -94,7 +94,7 @@ public class ExcelReader {
                 cadastral+= stringOfCell(row.getCell(12))+"."+stringOfCell(row.getCell(13))+"."+s+"|";
             }
         }
-        else{
+        else if(!stringOfCell(row.getCell(12)).equals("")){
             cadastral+=stringOfCell(row.getCell(12))+"."+stringOfCell(row.getCell(13))+"."+stringOfCell(row.getCell(14));
         }
         return cadastral;

@@ -14,9 +14,9 @@ public class DocumentFinder {
 
     public DocumentFinder(String path) {
         documents = new ArrayList<ImportDocument>();
-        
-        
-        
+
+
+
         Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
         Iterator<File> itr = listFiles.iterator();
         while (itr.hasNext()) {
@@ -35,9 +35,11 @@ public class DocumentFinder {
                     .replace("  ", " ").replace("..", ".");
             for (ImportDocument doc : documents) {
                 // fix wrong filenames
-                String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "");
-
-                if (fileName.contains(excelName)||fileName.contains(excelName.replaceAll("^CRE", "CUR"))||fileName.contains(excelName.replaceAll("^LAM", "FAB"))) {
+                String fileName = doc.getName().replaceAll("  ", " ").replaceAll("^GGI", "GIG").replaceAll("^GAG", "CAG").replace(". ", "").replace("..", ".");
+                String fileNameShort = fileName.replace("_",".").replace(" ", "");
+                String excelNameShort = excelName.replace("_",".").replace(" ", "");
+                if (fileName.contains(excelName)||fileName.contains(excelName.replaceAll("^RPG", "FAB"))||fileName.contains(excelName.replaceAll("^CUR", "CAR"))||fileName.contains(excelName.replaceAll("^CRE", "CUR"))||fileName.contains(excelName.replaceAll("^LAM", "FAB"))||fileNameShort.contains(excelNameShort)) {
+                    //System.out.println(fileNameShort+"\t"+excelNameShort);
                     result.add(doc);
                 }
             }
