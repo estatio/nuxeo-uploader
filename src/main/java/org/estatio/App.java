@@ -12,9 +12,9 @@ public class App
 
     public static void main(String[] args)
     { 
-        boolean persist = false;
+        boolean persist = true;
 
-        String properties = "CAG,CAR,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG";
+        String properties = "CAG";//,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG";
         // String properties = "RPG";
         // String properties = "LAM,LEO,RPG,RPM";
 
@@ -22,14 +22,14 @@ public class App
             long tStart = System.currentTimeMillis();
             System.out.println("--------------------------------------------------------------------------------");
             System.out.println(String.format("Start processing spreadsheet %s", property));
-            String path = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico", property);
+            String path = String.format("\\\\ams-s-storage\\storageroom\\A\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico", property);
             String excelFile="";
             try{
-                excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xls", property);
+                excelFile = String.format("\\\\ams-s-storage\\storageroom\\A\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xls", property);
             }catch(Exception e){
                 if(excelFile==""){
                     try{
-                        excelFile = String.format("\\\\ams-s-storage\\storageroom\\DeleteByUser\\Marc\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xlsx", property);
+                        excelFile = String.format("\\\\ams-s-storage\\storageroom\\A\\TechnicalArchive\\%1$s\\%1$s 2_Tecnico\\%1$s_Indice Archivio Tecnico ITA Unico.xlsx", property);
                     }catch(Exception f){
                     }
                 }
@@ -48,7 +48,7 @@ public class App
                 List<ImportDocument> excelDocs = reader.read(excelFile);
                 totalExcelRows = excelDocs.size();
                 totalFiles = finder.getDocuments().size();
-                DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo01.ecp.loc:8080/nuxeo/site/automation", "Administrator", "Administrator");
+                DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo02.ecp.loc:8080/nuxeo/site/automation", "lbos", "Chosentj33h");
                 for (ImportDocument doc : excelDocs) {
                     // System.out.print(".");
                     File file = null;
@@ -66,6 +66,7 @@ public class App
 
                     if (persist) {
                         nuxeoDoc = creator.create(doc);
+                        countFilesImported++;
                         if(fileDocs.size()>1){
                             creator.attach(nuxeoDoc, fileDocs.get(0));
                             fileDocs.get(0).setProcessed(true);

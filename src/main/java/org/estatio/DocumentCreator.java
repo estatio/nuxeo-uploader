@@ -83,7 +83,7 @@ public class DocumentCreator {
         String subject = (String) document.getProperty("def:Subject");
         String subSubject = (String) document.getProperty("def:SubSubject");
         List<DocumentType> x = new ArrayList<DocumentType>();
-        x.add(new DocumentType("Domain", "Technical Archive"));
+        x.add(new DocumentType("Domain", "Test"));
         x.add(new DocumentType("Country", "Italy"));
         x.add(new DocumentType("Property", property));
         x.add(new DocumentType("Subject", department));
@@ -98,9 +98,12 @@ public class DocumentCreator {
         StringBuilder bldr = new StringBuilder();
         for (int j = 0; j <= parentList.size() - 1; j++) {
             bldr.append("/").append(parentList.get(j).getName());
+            System.out.println(bldr);
         }
         Document document = find(bldr.toString());
+        
         if (document == null) {
+            System.out.println(parentList.size());
             int x = parentList.size() - 1;
             ArrayList<DocumentType> sub = new ArrayList<DocumentCreator.DocumentType>(parentList);
             sub.remove(sub.size() - 1);
