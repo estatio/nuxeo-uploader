@@ -39,8 +39,8 @@ public class ExcelReader {
             Row row = itr.next();
             Cell cell = row.getCell(4);
             Cell cell5 = row.getCell(5);
-            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC && cell.getNumericCellValue()>0 || cell5 != null && cell5.getCellType() == Cell.CELL_TYPE_NUMERIC && cell5.getNumericCellValue()>0) {
-               
+            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_NUMERIC && cell.getNumericCellValue() > 0 || cell5 != null && cell5.getCellType() == Cell.CELL_TYPE_NUMERIC && cell5.getNumericCellValue() > 0) {
+
                 String fileName = String.format(
                         "%s %s.%s.%s.%s",
                         stringOfCell(row.getCell(0)),
@@ -58,6 +58,11 @@ public class ExcelReader {
                     // dateStr, fileName));
                 }
 
+                String departmentSubject =
+                        stringOfCell(row.getCell(1))
+                                .concat("/" + StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2))
+                                .concat(stringOfCell(row.getCell(2)).length() > 2 ? "/" + stringOfCell(row.getCell(2)) : "");
+
                 ImportDocument doc = new ImportDocument(fileName, date);
                 doc.addProperty("def:Property", stringOfCell(row.getCell(0)));
                 doc.addProperty("def:Date", date);
@@ -72,67 +77,75 @@ public class ExcelReader {
                 doc.addProperty("def:Format", stringOfCell(row.getCell(20)));
                 doc.addProperty("def:DataRoom", stringOfCell(row.getCell(25)));
                 doc.addProperty("def:Location", stringOfCell(row.getCell(23)));
-                doc.addProperty("def:Department", stringOfCell(row.getCell(1)));
-                doc.addProperty("def:Subject", StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2));
-                doc.addProperty("def:SubSubject", stringOfCell(row.getCell(2)).length() > 2 ? stringOfCell(row.getCell(2)) : null);
+
+                doc.addProperty("def:DepartmentSubject", departmentSubject);
+
+//                doc.addProperty("def:Department", stringOfCell(row.getCell(1)));
+//                doc.addProperty("def:Subject", StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2));
+//                doc.addProperty("def:SubSubject", stringOfCell(row.getCell(2)).length() > 2 ? stringOfCell(row.getCell(2)) : null);
+
                 doc.addProperty("def:Brand", stringOfCell(row.getCell(10)));
-                try{
+                try {
                     System.out.println(doc.getProperty("dc:Expired").toString());
-                }catch(Exception e){
-                           
+                } catch (Exception e) {
+
                 }
                 documents.add(doc);
             }
         }
         return documents;
     }
-    private String getCadastrals(Row row){
+
+    private String getCadastrals(Row row) {
         String cadastral = "";
-        if(stringOfCell(row.getCell(14)).contains("-")){
-            String [] strings = stringOfCell(row.getCell(14)).split("-");
-            for(String s : strings){
-                cadastral+= stringOfCell(row.getCell(12))+"."+stringOfCell(row.getCell(13))+"."+s+"|";
+        if (stringOfCell(row.getCell(14)).contains("-")) {
+            String[] strings = stringOfCell(row.getCell(14)).split("-");
+            for (String s : strings) {
+                cadastral += stringOfCell(row.getCell(12)) + "." + stringOfCell(row.getCell(13)) + "." + s + "|";
             }
         }
-        else if(!stringOfCell(row.getCell(12)).equals("")){
-            cadastral+=stringOfCell(row.getCell(12))+"."+stringOfCell(row.getCell(13))+"."+stringOfCell(row.getCell(14));
+        else if (!stringOfCell(row.getCell(12)).equals("")) {
+            cadastral += stringOfCell(row.getCell(12)) + "." + stringOfCell(row.getCell(13)) + "." + stringOfCell(row.getCell(14));
         }
         return cadastral;
     }
-    private LocalDate getExpirationDate(Row row){
-        String expirationString="";
-        LocalDate expirationDate=null;
-        if(stringOfCell(row.getCell(28))!=""&&row.getCell(28)!=null){
-            expirationString+=stringOfCell(row.getCell(28));
-            expirationString+=getDate(row);
-            expirationString+=getDay(row);
-            try{
-                expirationDate=LocalDate.parse(expirationString, DateTimeFormat.forPattern("yyyyMMdd"));
+
+    private LocalDate getExpirationDate(Row row) {
+        String expirationString = "";
+        LocalDate expirationDate = null;
+        if (stringOfCell(row.getCell(28)) != "" && row.getCell(28) != null) {
+            expirationString += stringOfCell(row.getCell(28));
+            expirationString += getDate(row);
+            expirationString += getDay(row);
+            try {
+                expirationDate = LocalDate.parse(expirationString, DateTimeFormat.forPattern("yyyyMMdd"));
                 return expirationDate;
-            }catch(Exception e){
+            } catch (Exception e) {
 
             }
         }
         return null;
     }
-    private String getDate(Row row){
-        if(stringOfCell(row.getCell(27))!=""){
-            if(stringOfCell(row.getCell(27)).length()==2){
+
+    private String getDate(Row row) {
+        if (stringOfCell(row.getCell(27)) != "") {
+            if (stringOfCell(row.getCell(27)).length() == 2) {
                 return stringOfCell(row.getCell(27));
             }
-            if(stringOfCell(row.getCell(27)).length()<2){
-                return "0"+stringOfCell(row.getCell(27));
+            if (stringOfCell(row.getCell(27)).length() < 2) {
+                return "0" + stringOfCell(row.getCell(27));
             }
         }
         return "01";
     }
-    private String getDay(Row row){
-        if(stringOfCell(row.getCell(26))!=""){
-            if(stringOfCell(row.getCell(26)).length()==2){
+
+    private String getDay(Row row) {
+        if (stringOfCell(row.getCell(26)) != "") {
+            if (stringOfCell(row.getCell(26)).length() == 2) {
                 return stringOfCell(row.getCell(26));
             }
-            if(stringOfCell(row.getCell(26)).length()<2){
-                return "0"+stringOfCell(row.getCell(26));
+            if (stringOfCell(row.getCell(26)).length() < 2) {
+                return "0" + stringOfCell(row.getCell(26));
             }
         }
         return "01";
