@@ -80,9 +80,9 @@ public class ExcelReader {
 
                 doc.addProperty("def:DepartmentSubject", departmentSubject);
 
-//                doc.addProperty("def:Department", stringOfCell(row.getCell(1)));
-//                doc.addProperty("def:Subject", StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2));
-//                doc.addProperty("def:SubSubject", stringOfCell(row.getCell(2)).length() > 2 ? stringOfCell(row.getCell(2)) : null);
+                doc.addProperty("def:Department", stringOfCell(row.getCell(1)));
+                doc.addProperty("def:Subject", StringUtils.substring(stringOfCell(row.getCell(2)), 0, 2));
+                doc.addProperty("def:SubSubject", stringOfCell(row.getCell(2)).length() > 2 ? stringOfCell(row.getCell(2)) : null);
 
                 doc.addProperty("def:Brand", stringOfCell(row.getCell(10)));
                 try {

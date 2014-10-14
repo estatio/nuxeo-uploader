@@ -14,7 +14,7 @@ public class App
     { 
         boolean persist = true;
 
-        String properties = "CAG";//,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG";
+        String properties = "CAG,CAS,CRE,CUR,FAV,GIG,LAM,LEO,LUN,MCB,POR,RPC,RPG,RPM";
         // String properties = "RPG";
         // String properties = "LAM,LEO,RPG,RPM";
 
@@ -48,7 +48,7 @@ public class App
                 List<ImportDocument> excelDocs = reader.read(excelFile);
                 totalExcelRows = excelDocs.size();
                 totalFiles = finder.getDocuments().size();
-                DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo02.ecp.loc:8080/nuxeo/site/automation", "lbos", "Chosentj33h");
+                DocumentCreator creator = new DocumentCreator("http://ams-s-nuxeo01.ecp.loc:8080/nuxeo/site/automation", "Administrator", "Administrator");
                 for (ImportDocument doc : excelDocs) {
                     // System.out.print(".");
                     File file = null;
